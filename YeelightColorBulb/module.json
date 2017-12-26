@@ -7,7 +7,7 @@
   [
     "Yeelight Color Bulb"
   ],
-  "parentRequirements": ["{61791C2F-DE68-4CB7-9D25-BAD5803F9FEE}"],
+  "parentRequirements": ["{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}"],
   "childRequirements": ["{3491DB15-7B4A-449D-99D6-64185F96C166}"],
   "implemented": ["{0D72FB23-8FF2-403C-AE90-FBD1AD7EA80A}","{E8C62A8C-430D-48E1-8AC6-CBB58AA07A67}"],
   "prefix": "YCB"
