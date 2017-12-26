@@ -1,0 +1,17 @@
+{
+  "elements":
+  [
+    { "type": "ValidationTextBox" , "name" : "ipadress", "caption": "IP Adresse" },
+    { "type": "ValidationTextBox" , "name" : "intervall", "caption": "Aktual. Intervall" }
+  ],
+  "actions":
+  [
+    { "type": "Button", "label": "Lese Konfiguration ein", "onClick": "YCB_readdata($id);" }
+  ],
+  "status":
+  [
+    { "code": 101, "icon": "active", "caption": "LaMetric Time Instanz wird erstellt..." },
+    { "code": 102, "icon": "active", "caption": "LaMetric Time Instanz ist aktiv" },
+    { "code": 202, "icon": "error", "caption": "Konfiguration falsch oder unvollständig" }
+  ]
+}

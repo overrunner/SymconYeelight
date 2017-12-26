@@ -1,0 +1,14 @@
+{
+  "id": "{BCA91557-6341-4306-B42F-924F443B3389}",
+  "name": "YeelightColorBulb",
+  "type": 3,
+  "vendor": "Xiaomi",
+  "aliases":
+  [
+    "Yeelight Color Bulb"
+  ],
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "YCB"
+}

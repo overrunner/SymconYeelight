@@ -1,0 +1,12 @@
+{
+  "id": "{58CB3D6F-D1A0-4FEA-91E0-1E5C1E5931A5}",
+  "author": "Steffen Bornemann",
+  "name": "SymconYeelight",
+  "url": "https://github.com/overrunner/SymconYeelight",
+  "compatibility": {
+    "version": "4.3",
+  },
+  "version": "0.1",
+  "build": 0,
+  "date": 0
+}
