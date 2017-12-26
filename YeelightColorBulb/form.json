@@ -10,8 +10,8 @@
   ],
   "status":
   [
-    { "code": 101, "icon": "active", "caption": "LaMetric Time Instanz wird erstellt..." },
-    { "code": 102, "icon": "active", "caption": "LaMetric Time Instanz ist aktiv" },
+    { "code": 101, "icon": "active", "caption": "Yeelight Instanz wird erstellt..." },
+    { "code": 102, "icon": "active", "caption": "Yeelight Instanz ist aktiv" },
     { "code": 202, "icon": "error", "caption": "Konfiguration falsch oder unvollständig" }
   ]
 }
