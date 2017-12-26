@@ -30,7 +30,7 @@ class YeelightColorBulb extends IPSModule {
         $this->RegisterVariableInteger("dim", "Dimmer", "~Intensity.100",3);
 
  //       $this->RegisterTimer('ReadData', $this->readStatesFromDevice("intervall") * 1000, 'YCB_readStatesFromDevice($id)');
-        $pid = $this->RequireParent("61791C2F-DE68-4CB7-9D25-BAD5803F9FEE");
+        $pid = $this->RequireParent("79827379-F36E-4ADA-8A95-5F8D1DC92FA9");
         IPS_SetName($pid, __CLASS__ . " Socket");
 
     }
