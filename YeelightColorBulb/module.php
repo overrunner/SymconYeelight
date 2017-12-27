@@ -18,11 +18,9 @@ class YeelightColorBulb extends IPSModule {
         $this->RegisterPropertyString("ipadress", "");
         $this->RegisterPropertyInteger("intervall", "30");
 
-        $pid = $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}"); // CLIENT SOCKET
-        IPS_SetName($pid, __CLASS__ . " Socket");
-        $pid = $this->RegisterPropertyInteger("ClientSocket", $pid);
+        $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}"); // CLIENT SOCKET
 
-        $this->initSocket($pid);
+
 
         //       $this->RegisterTimer('ReadData', $this->readStatesFromDevice("intervall") * 1000, 'YCB_readStatesFromDevice($id)');
 
@@ -37,16 +35,17 @@ class YeelightColorBulb extends IPSModule {
         $this->RegisterVariableBoolean("power", "Power", "~Switch",2);
         $this->RegisterVariableInteger("dim", "Dimmer", "~Intensity.100",3);
 
-        $this->initSocket($this->ReadPropertyInteger("ClientSocket"));
-
+        $this->GetConfigurationForParent();
     }
 
-    private function initSocket($pid) {
+    public function GetConfigurationForParent()
+    {
         $host = $this->ReadPropertyString("ipadress");
         $port = 55443;
-        IPS_SetProperty($pid, 'Host', $host);
-        IPS_SetProperty($pid, 'Port', $port);
+
+        return "{\"Host\": \"$host\", \"Port\": \"$port\"}";
     }
+
 
     // Lese alle Konfigurationsdaten aus
     public function readStatesFromDevice() {
