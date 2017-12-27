@@ -6,7 +6,7 @@
   ],
   "actions":
   [
-    { "type": "Button", "label": "Lese Konfiguration ein", "onClick": "YCB_readdata($id);" }
+    { "type": "Button", "label": "Lese Daten der Lampe ein", "onClick": "YCB_readStatesFromDevice($id);" }
   ],
   "status":
   [
