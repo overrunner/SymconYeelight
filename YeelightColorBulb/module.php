@@ -17,11 +17,6 @@ class YeelightColorBulb extends IPSModule {
         $this->RegisterPropertyInteger("intervall", "30");
 
         $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}"); // CLIENT SOCKET
-
-
-
-        //       $this->RegisterTimer('ReadData', $this->readStatesFromDevice("intervall") * 1000, 'YCB_readStatesFromDevice($id)');
-
     }
 
 
@@ -29,20 +24,21 @@ class YeelightColorBulb extends IPSModule {
         // Diese Zeile nicht löschen
         parent::ApplyChanges();
 
-        $this->RegisterVariableString("name", "Name", "~String",1);
-        $this->RegisterVariableBoolean("power", "Power", "~Switch",2);
-        $this->RegisterVariableInteger("brightness", "Brightness", "~Intensity.100",3);
+        $this->RegisterVariableBoolean("power", "Power", "~Switch", 0);
+        $this->RegisterVariableInteger("bright", "Brightness", "~Intensity.100", 1);
+        $this->RegisterVariableInteger("ct", "Color Temperature", "~Intensity.65535", 2);
+        $this->RegisterVariableString("rgb", "Color", "~String", 3);
+        $this->RegisterVariableString("hue", "Hue", "~String", 4);
+        $this->RegisterVariableInteger("sat", "Saturation", "~Intensity.100", 5);
+        $this->RegisterVariableInteger("color_mode", "Color Mode", "", 6);
 
         $this->GetConfigurationForParent();
-
-
     }
 
     public function GetConfigurationForParent()
     {
         $host = $this->ReadPropertyString("ipadress");
         $port = 55443;
-
         return "{\"Host\": \"$host\", \"Port\": \"$port\"}";
     }
 
@@ -50,17 +46,61 @@ class YeelightColorBulb extends IPSModule {
     // Lese alle Konfigurationsdaten aus
     public function readStatesFromDevice() {
 
-        $commandStr = $this->buildCommandString('get_prop', array('name', 'power', 'bright'));
-        $result = $this->SendDataToParent($commandStr."\r\n");
-        SetValue(IPS_GetObjectIDByName("name", $this->InstanceID), $result);
+        $commandStr = $this->buildCommandString('get_prop', array('power', 'bright', 'ct', 'rgb', 'hue', 'sat', 'color_mode'));
+        //IPS_LogMessage("Yeelight", $commandStr);
+
+        $this->SendDataToParent(json_encode(Array(
+            "DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}",
+            "Buffer" => $commandStr . "\r\n"
+        )));
     }
 
+    public function ReceiveData($JSONString)
+    {
+        $data = json_decode($JSONString);
+        $payload = json_decode($data->Buffer);
+        //27/12/2017 16:06:33 | Receive | {"id":1, "result":["off","27","2945","255","359","100","2"]}
+        // this is our Datafetch from Configuration GUI, which has a fixed sorting of values
+        if (isset($payload->id) && '444' == $payload->id) {
+            SetValueBoolean(IPS_GetObjectIDByIdent("power", $this->InstanceID), 'on' == $payload->result[0] ? TRUE : FALSE);
+            SetValueInteger(IPS_GetObjectIDByIdent("bright", $this->InstanceID), $payload->result[1]);
+            SetValueInteger(IPS_GetObjectIDByIdent("ct", $this->InstanceID), $payload->result[2]);
+            SetValueString(IPS_GetObjectIDByIdent("rgb", $this->InstanceID), $payload->result[3]);
+            SetValueString(IPS_GetObjectIDByIdent("hue", $this->InstanceID), $payload->result[4]);
+            SetValueInteger(IPS_GetObjectIDByIdent("sat", $this->InstanceID), $payload->result[5]);
+            SetValueInteger(IPS_GetObjectIDByIdent("color_mode", $this->InstanceID), $payload->result[6]);
+            IPS_LogMessage("Reciever", "done");
+            return;
+        }
 
-
+        //IPS_LogMessage("Receiver", utf8_decode($data->Buffer));
+        //27/12/2017 17:40:01 | Receiver | {"method":"props","params":{"power":"off"}}
+        if (isset($payload->method) && 'props' == $payload->method) {
+            foreach ($payload->params as $key => $val) {
+                if ('power' == $key) {
+                    SetValueBoolean(IPS_GetObjectIDByIdent("power", $this->InstanceID), 'on' == $val ? TRUE : FALSE);
+                } else if ('bright' == $key) {
+                    SetValueInteger(IPS_GetObjectIDByIdent("bright", $this->InstanceID), $val);
+                } else if ('ct' == $key) {
+                    SetValueInteger(IPS_GetObjectIDByIdent("ct", $this->InstanceID), $val);
+                } else if ('rgb' == $key) {
+                    SetValueString(IPS_GetObjectIDByIdent("rgb", $this->InstanceID), $val);
+                } else if ('hue' == $key) {
+                    SetValueString(IPS_GetObjectIDByIdent("hue", $this->InstanceID), $val);
+                } else if ('sat' == $key) {
+                    SetValueInteger(IPS_GetObjectIDByIdent("sat", $this->InstanceID), $val);
+                } else if ('color_mode' == $key) {
+                    SetValueInteger(IPS_GetObjectIDByIdent("color_mode", $this->InstanceID), $val);
+                }
+            }
+        } else {
+            IPS_LogMessage("YeelightColorBulb", "Unknown Notification received " + utf8_decode($data->Buffer));
+        }
+    }
 
     private function buildCommandString($method, $params) {
         $Data = Array(
-            'id' => 1,
+            'id' => 444,
             'method' => $method,
             'params' => $params
         );
