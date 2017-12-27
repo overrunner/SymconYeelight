@@ -14,7 +14,6 @@ class YeelightColorBulb extends IPSModule {
         parent::Create();
 
         $this->RegisterPropertyString("ipadress", "");
-        $this->RegisterPropertyInteger("intervall", "30");
 
         $this->RequireParent("{3CFF0FD9-E306-41DB-9B5A-9D06D38576C3}"); // CLIENT SOCKET
     }
@@ -33,6 +32,9 @@ class YeelightColorBulb extends IPSModule {
         $this->RegisterVariableInteger("color_mode", "Color Mode", "", 6);
 
         $this->GetConfigurationForParent();
+
+        $this->EnableAction("power");
+        $this->EnableAction("bright");
     }
 
     public function GetConfigurationForParent()
@@ -45,14 +47,7 @@ class YeelightColorBulb extends IPSModule {
 
     // Lese alle Konfigurationsdaten aus
     public function readStatesFromDevice() {
-
-        $commandStr = $this->buildCommandString('get_prop', array('power', 'bright', 'ct', 'rgb', 'hue', 'sat', 'color_mode'));
-        //IPS_LogMessage("Yeelight", $commandStr);
-
-        $this->SendDataToParent(json_encode(Array(
-            "DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}",
-            "Buffer" => $commandStr . "\r\n"
-        )));
+        $this->buildAndSendCommand('444', 'get_prop', array('power', 'bright', 'ct', 'rgb', 'hue', 'sat', 'color_mode'));
     }
 
     public function ReceiveData($JSONString)
@@ -94,17 +89,41 @@ class YeelightColorBulb extends IPSModule {
                 }
             }
         } else {
-            IPS_LogMessage("YeelightColorBulb", "Unknown Notification received " + utf8_decode($data->Buffer));
+            IPS_LogMessage("YeelightColorBulb", "Unknown Notification received " . utf8_decode($data->Buffer));
         }
     }
 
-    private function buildCommandString($method, $params) {
+    public function RequestAction($Ident, $Value)
+    {
+        IPS_LogMessage("RequestAction ", utf8_decode($Ident) . " value: " . $Value);
+        switch ($Ident) {
+            case "power":
+                $this->buildAndSendCommand('1', "set_power", array($Value ? 'on' : 'off', 'smooth', 500));
+                SetValueBoolean($this->GetIDForIdent($Ident), $Value);
+                break;
+            case "bright":
+                $this->buildAndSendCommand('2', "set_bright", array($Value));
+                SetValueInteger($this->GetIDForIdent($Ident), $Value);
+                break;
+            default:
+                throw new Exception("Invalid Ident: " . $Ident);
+        }
+    }
+
+    private function buildAndSendCommand($id, $method, $params)
+    {
         $Data = Array(
-            'id' => 444,
+            'id' => $id,
             'method' => $method,
             'params' => $params
         );
-        return json_encode($Data);
+        $payload = json_encode($Data);
+
+        $this->SendDataToParent(json_encode(Array(
+            "DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}",
+            "Buffer" => $payload . "\r\n"
+        )));
+
     }
 }
 ?>

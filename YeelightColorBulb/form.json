@@ -2,7 +2,6 @@
   "elements":
   [
     { "type": "ValidationTextBox" , "name" : "ipadress", "caption": "IP Adresse" },
-    { "type": "ValidationTextBox" , "name" : "intervall", "caption": "Aktual. Intervall" }
   ],
   "actions":
   [
