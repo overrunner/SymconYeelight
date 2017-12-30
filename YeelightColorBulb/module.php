@@ -98,18 +98,25 @@ class YeelightColorBulb extends IPSModule {
         IPS_LogMessage("RequestAction ", utf8_decode($Ident) . " value: " . $Value);
         switch ($Ident) {
             case "power":
-                $this->buildAndSendCommand('1', "set_power", array($Value ? 'on' : 'off', 'smooth', 500));
-                SetValueBoolean($this->GetIDForIdent($Ident), $Value);
+                $this->Power($Value);
                 break;
             case "bright":
-                $this->buildAndSendCommand('2', "set_bright", array($Value));
-                SetValueInteger($this->GetIDForIdent($Ident), $Value);
+                $this->Brightness($Value);
                 break;
             default:
                 throw new Exception("Invalid Ident: " . $Ident);
         }
     }
 
+    public function Power($Value)
+    {
+        $this->buildAndSendCommand(10, "set_power", array($Value ? 'on' : 'off', 'smooth', 500));
+    }
+
+    public function Brightness($Value)
+    {
+        $this->buildAndSendCommand('20', "set_bright", array($Value));
+    }
     private function buildAndSendCommand($id, $method, $params)
     {
         $Data = Array(
