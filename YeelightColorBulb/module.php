@@ -124,6 +124,9 @@ class YeelightColorBulb extends IPSModule {
                     SetValueInteger(IPS_GetObjectIDByIdent("color_mode", $this->InstanceID), $val);
                 }
             }
+        } else if ('ok' == $payload->result[0]) {
+            //IPS_LogMessage($payload->id, "ok");
+            //TODO hier darf erst der Wert in IPS gesetzt werden....
         } else {
             IPS_LogMessage("YeelightColorBulb", "Unknown Notification received " . utf8_decode($data->Buffer));
         }
@@ -131,7 +134,7 @@ class YeelightColorBulb extends IPSModule {
 
     public function RequestAction($Ident, $Value)
     {
-        IPS_LogMessage("RequestAction ", utf8_decode($Ident) . " value: " . $Value);
+        //IPS_LogMessage("RequestAction ", utf8_decode($Ident) . " value: " . $Value);
         switch ($Ident) {
             case "power":
                 $this->Power($Value);
@@ -194,7 +197,6 @@ class YeelightColorBulb extends IPSModule {
             "DataID" => "{79827379-F36E-4ADA-8A95-5F8D1DC92FA9}",
             "Buffer" => $payload . "\r\n"
         )));
-        IPS_LogMessage("Yeelight", $payload);
     }
 }
 ?>
