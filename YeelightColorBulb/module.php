@@ -96,9 +96,15 @@ class YeelightColorBulb extends IPSModule {
             SetValueBoolean(IPS_GetObjectIDByIdent("power", $this->InstanceID), 'on' == $payload->result[0] ? TRUE : FALSE);
             SetValueInteger(IPS_GetObjectIDByIdent("bright", $this->InstanceID), $payload->result[1]);
             SetValueInteger(IPS_GetObjectIDByIdent("ct", $this->InstanceID), $payload->result[2]);
-            SetValueInteger(IPS_GetObjectIDByIdent("rgb", $this->InstanceID), $payload->result[3]);
-            SetValueInteger(IPS_GetObjectIDByIdent("hue", $this->InstanceID), $payload->result[4]);
-            SetValueInteger(IPS_GetObjectIDByIdent("sat", $this->InstanceID), $payload->result[5]);
+            if (!empty($payload->result[3])) {
+                SetValueInteger(IPS_GetObjectIDByIdent("rgb", $this->InstanceID), $payload->result[3]);
+            }
+            if (!empty($payload->result[4])) {
+                SetValueInteger(IPS_GetObjectIDByIdent("hue", $this->InstanceID), $payload->result[4]);
+            }
+            if (!empty($payload->result[5])) {
+                SetValueInteger(IPS_GetObjectIDByIdent("sat", $this->InstanceID), $payload->result[5]);
+            }
             SetValueInteger(IPS_GetObjectIDByIdent("color_mode", $this->InstanceID), $payload->result[6]);
             return;
         }
