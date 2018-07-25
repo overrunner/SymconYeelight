@@ -1,7 +1,11 @@
 {
   "elements":
   [
-    { "type": "ValidationTextBox" , "name" : "ipadress", "caption": "IP Adresse" },
+    {
+      "type": "ValidationTextBox",
+      "name": "ipadress",
+      "caption": "IP Adresse"
+    }
   ],
   "actions":
   [
