@@ -47,7 +47,13 @@ class YeelightColorBulb extends IPSModule {
         if (!IPS_VariableProfileExists("Yeelight.ColorMode")) {
             IPS_CreateVariableProfile("Yeelight.ColorMode", 1);
         }
-        IPS_SetVariableProfileValues("Yeelight.ColorMode", 1, 3, 1);
+        IPS_SetVariableProfileValues("Yeelight.ColorMode", 0, 5, 0);
+        IPS_SetVariableProfileAssociation("Yeelight.ColorMode", 0, "Default", "", 0);
+        IPS_SetVariableProfileAssociation("Yeelight.ColorMode", 1, "Color Temperature", "", 0);
+        IPS_SetVariableProfileAssociation("Yeelight.ColorMode", 2, "RGB", "", 0);
+        IPS_SetVariableProfileAssociation("Yeelight.ColorMode", 3, "HSV", "", 0);
+        IPS_SetVariableProfileAssociation("Yeelight.ColorMode", 4, "Color Flow", "", 0);
+        IPS_SetVariableProfileAssociation("Yeelight.ColorMode", 5, "Night Light (Ceiling only)", "", 0);
     }
 
 
@@ -61,7 +67,7 @@ class YeelightColorBulb extends IPSModule {
         $this->RegisterVariableInteger("rgb", "Color", "Yeelight.RGB", 3);
         $this->RegisterVariableInteger("hue", "Hue", "Yeelight.HUE", 4);
         $this->RegisterVariableInteger("sat", "Saturation", "~Intensity.100", 5);
-        $this->RegisterVariableInteger("color_mode", "Color Mode", "", 6);
+        $this->RegisterVariableInteger("color_mode", "Color Mode", "Yeelight.ColorMode", 6);
 
         $this->GetConfigurationForParent();
 
@@ -71,6 +77,7 @@ class YeelightColorBulb extends IPSModule {
         $this->EnableAction("rgb");
         $this->EnableAction("hue");
         $this->EnableAction("sat");
+        $this->EnableAction("color_mode");
     }
 
     public function GetConfigurationForParent()
@@ -108,7 +115,6 @@ class YeelightColorBulb extends IPSModule {
             SetValueInteger(IPS_GetObjectIDByIdent("color_mode", $this->InstanceID), $payload->result[6]);
             return;
         }
-
         //IPS_LogMessage("Receiver", utf8_decode($data->Buffer));
         //27/12/2017 17:40:01 | Receiver | {"method":"props","params":{"power":"off"}}
         if (isset($payload->method) && 'props' == $payload->method) {
@@ -160,6 +166,9 @@ class YeelightColorBulb extends IPSModule {
             case "sat":
                 $this->HUE($this->GetValue("hue"), $Value);
                 break;
+            case "color_mode":
+                $this->Mode($this->GetValue("color_mode"), $Value);
+                break;
             default:
                 throw new Exception("Invalid Ident: " . $Ident);
         }
@@ -169,6 +178,12 @@ class YeelightColorBulb extends IPSModule {
     {
         $this->buildAndSendCommand(self::POWER_CMD, "set_power", array($Value ? 'on' : 'off', 'smooth', 500));
     }
+
+    public function Mode(int $mode)
+    {
+        $this->buildAndSendCommand(self::COLOR_MODE_CMD, "set_power", array('on', 'smooth', 500, $mode));
+    }
+
 
     public function Brightness($Value)
     {
